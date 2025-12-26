@@ -1,4 +1,10 @@
+
+
 const API = "/api/v1/tasks";
+
+//const API = "http://localhost:8080/api/v1/tasks";
+//const API = `http://${location.hostname}:8080/api/v1/tasks`;
+
 
 const tbody = document.getElementById("tbody");
 const form = document.getElementById("taskForm");
