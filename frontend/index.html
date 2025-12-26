@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Grupo 1 - Tareas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Gestor de Tareas (Grupo 1)</h1>
+
+    <section class="card">
+      <h2>Nueva tarea</h2>
+      <form id="frm">
+        <input id="materia" placeholder="Materia (ej. Programación Web)" required />
+        <input id="titulo" placeholder="Título" required />
+        <input id="descripcion" placeholder="Descripción (opcional)" />
+        <button>Guardar</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Listado</h2>
+      <div class="filters">
+        <input id="fMateria" placeholder="Filtrar por materia" />
+        <select id="fEstado">
+          <option value="">(Todos)</option>
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="HECHA">HECHA</option>
+        </select>
+        <button id="btnFiltrar" type="button">Aplicar</button>
+        <button id="btnReset" type="button">Reset</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Materia</th><th>Título</th><th>Estado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
