@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestor de Tareas - Proyecto Final</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="container">
+    <h1>Gestor de Tareas</h1>
+    <p class="muted">Frontend (HTML/CSS/JS) consumiendo <code>/api/v1</code></p>
+  </header>
+
+  <main class="container grid">
+    <section class="card">
+      <h2 id="formTitle">Nueva tarea</h2>
+
+      <form id="taskForm">
+        <input type="hidden" id="taskId" />
+
+        <label>
+          Título
+          <input id="title" type="text" minlength="3" required placeholder="Ej: Investigar Sequelize" />
+        </label>
+
+        <label>
+          Descripción
+          <textarea id="description" rows="3" placeholder="Detalles..."></textarea>
+        </label>
+
+        <label>
+          Estado
+          <select id="status">
+            <option value="PENDIENTE">PENDIENTE</option>
+            <option value="EN_PROGRESO">EN_PROGRESO</option>
+            <option value="HECHA">HECHA</option>
+          </select>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn">Guardar</button>
+          <button type="button" id="cancelBtn" class="btn secondary">Cancelar</button>
+        </div>
+
+        <p id="msg" class="msg"></p>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <h2>Listado</h2>
+        <button id="reloadBtn" class="btn secondary">Recargar</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="container muted">
+    <small>API: <code>/api/v1/tasks</code></small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
