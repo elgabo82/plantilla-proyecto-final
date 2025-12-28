@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const https = require("https");
+const cors = require("cors");
 require("dotenv").config();
 
 const { sequelize } = require("./db/db");
@@ -11,7 +12,6 @@ const { router: taskRoutes } = require("./routes/task.routes");
 
 const app = express();
 
-const cors = require("cors");
 
 const corsOptions = {
   origin: ["https://pweb.grupofmo.com"],     // aquí defines quién puede consumir la API
@@ -24,11 +24,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // 2) responde a preflight (OPTIONS) correctamente
-app.options("*", cors(corsOptions));
-
-
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
+
 
 // API
 app.get("/api/v1/health", (req, res) => res.json({ ok: true, https: true }));
