@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 
 const { sequelize } = require("./db/db");
@@ -7,16 +8,32 @@ require("./models/Task"); // registra el modelo antes de sync()
 const { router: taskRoutes } = require("./routes/task.routes");
 
 const app = express();
+
+const corsOptions = {
+  origin: true, // refleja el Origin (incluye 'null' de file://)
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204
+};
+  // CORS para todas las rutas
+  app.use(cors(corsOptions));
+
+  // ✅ Preflight para cualquier ruta (más seguro que "*")
+  app.options(/.*/, cors(corsOptions));
+
+
+
 app.use(express.json());
 
 
-app.use((req, res, next) => {
+
+/*app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
-});
+});*/
 
 // API versionada
 app.get("/api/v1/estado", (req, res) => res.json({ ok: true, version: "v1" }));

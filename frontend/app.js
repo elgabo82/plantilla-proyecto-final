@@ -3,7 +3,9 @@
 //const API = "/api/v1/tasks";
 
 //const API = "http://localhost:8080/api/v1/tasks";
-const API = `http://${location.hostname}:8080/api/v1/tasks`;
+
+//const API = `http://${location.hostname}:5556/api/v1/tasks`;
+const API = "http://pweb.grupofmo.com:5556/api/v1/tasks";
 
 
 const tbody = document.getElementById("tbody");
