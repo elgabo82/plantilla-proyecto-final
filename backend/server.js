@@ -5,7 +5,7 @@ const http = require("http");
 const https = require("https");
 require("dotenv").config();
 
-const { sequelize } = require("./db");
+const { sequelize } = require("./db/db");
 require("./models/Task");
 const { router: taskRoutes } = require("./routes/task.routes");
 
