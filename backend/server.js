@@ -1,64 +1,58 @@
 const express = require("express");
-const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+const http = require("http");
+const https = require("https");
 require("dotenv").config();
 
-const { sequelize } = require("./db/db");
-require("./models/Task"); // registra el modelo antes de sync()
-
+const { sequelize } = require("./db");
+require("./models/Task");
 const { router: taskRoutes } = require("./routes/task.routes");
 
 const app = express();
-
-const corsOptions = {
-  origin: true, // refleja el Origin (incluye 'null' de file://)
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 204
-};
-  // CORS para todas las rutas
-  app.use(cors(corsOptions));
-
-  // ✅ Preflight para cualquier ruta (más seguro que "*")
-  app.options(/.*/, cors(corsOptions));
-
-
-
 app.use(express.json());
 
-
-
-/*app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});*/
-
-// API versionada
-app.get("/api/v1/estado", (req, res) => res.json({ ok: true, version: "v1" }));
+// API
+app.get("/api/v1/health", (req, res) => res.json({ ok: true, https: true }));
 app.use("/api/v1", taskRoutes);
 
-// Opcional: evitar caché en dev (muy útil)
-app.use((req, res, next) => {
-  res.setHeader("Cache-Control", "no-store");
-  next();
-});
+// (Opcional) servir frontend en el mismo puerto
+// const FRONTEND_DIR = path.join(__dirname, "..", "..", "..", "frontend");
+// app.use(express.static(FRONTEND_DIR));
+// app.get("/", (req, res) => res.sendFile(path.join(FRONTEND_DIR, "index.html")));
 
-// 404 API
 app.use((req, res) => res.status(404).json({ message: "Ruta no encontrada" }));
 
 async function bootstrap() {
   try {
     await sequelize.authenticate();
-    console.log("✅ MariaDB conectada");
-
-    // Crea tablas si NO existen
     await sequelize.sync();
-    console.log("✅ Tablas creadas/verificadas (sync)");
+    console.log("✅ DB OK, tablas sync");
 
-    const PORT = Number(process.env.PORT || 3000);
-    app.listen(PORT, "0.0.0.0", () => console.log(`🚀 API lista en puerto ${PORT}`));
+    const PORT = Number(process.env.PORT || 8080);
+    const SSL_ENABLED = String(process.env.SSL_ENABLED || "false") === "true";
+
+    if (SSL_ENABLED) {
+      const keyPath = path.resolve(process.cwd(), process.env.SSL_KEY_PATH || "ssl/server.key");
+      const certPath = path.resolve(process.cwd(), process.env.SSL_CERT_PATH || "ssl/server.crt");
+
+      const httpsServer = https.createServer(
+        {
+          key: fs.readFileSync(keyPath),
+          cert: fs.readFileSync(certPath),
+        },
+        app
+      );
+
+      httpsServer.listen(PORT, () => {
+        console.log(`🔐 HTTPS API lista en https://localhost:${PORT}`);
+      });
+    } else {
+      const httpServer = http.createServer(app);
+      httpServer.listen(PORT, () => {
+        console.log(`🌐 HTTP API lista en http://localhost:${PORT}`);
+      });
+    }
   } catch (err) {
     console.error("❌ Error de arranque:", err.message);
     process.exit(1);
