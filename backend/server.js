@@ -10,6 +10,24 @@ require("./models/Task");
 const { router: taskRoutes } = require("./routes/task.routes");
 
 const app = express();
+
+const cors = require("cors");
+
+const corsOptions = {
+  origin: ["https://pweb.grupofmo.com"],     // aquí defines quién puede consumir la API
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false                         // pon true solo si usas cookies/sesiones
+};
+
+// 1) aplica CORS a todas las rutas
+app.use(cors(corsOptions));
+
+// 2) responde a preflight (OPTIONS) correctamente
+app.options("*", cors(corsOptions));
+
+
+
 app.use(express.json());
 
 // API
