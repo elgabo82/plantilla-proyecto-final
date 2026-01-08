@@ -1,150 +1,124 @@
-
-
-//const API = "/api/v1/tasks";
-
-//const API = "http://localhost:8080/api/v1/tasks";
-
-//const API = `http://${location.hostname}:5556/api/v1/tasks`;
-const API = "https://pweb.grupofmo.com:5556/api/v1/tasks";
-
+const API = "http://localhost:8080/api/v1/productos";
 
 const tbody = document.getElementById("tbody");
-const form = document.getElementById("taskForm");
+const form = document.getElementById("taskForm"); 
 const msg = document.getElementById("msg");
 
-const taskId = document.getElementById("taskId");
-const title = document.getElementById("title");
-const description = document.getElementById("description");
-const statusEl = document.getElementById("status");
+
+const productId = document.getElementById("taskId"); 
+const nombre = document.getElementById("title");
+const precio = document.getElementById("description"); 
+const cantidad = document.getElementById("status"); 
 const formTitle = document.getElementById("formTitle");
 
-document.getElementById("reloadBtn").addEventListener("click", loadTasks);
+document.getElementById("reloadBtn").addEventListener("click", loadProducts);
 document.getElementById("cancelBtn").addEventListener("click", resetForm);
 
 function setMsg(text, isError = false) {
-  msg.textContent = text;
-  msg.style.color = isError ? "#fca5a5" : "#86efac";
-  if (!text) msg.style.color = "";
+    msg.textContent = text;
+    msg.style.color = isError ? "#fca5a5" : "#86efac";
 }
 
 async function http(url, options = {}) {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options
-  });
-
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message = data?.message || `Error HTTP ${res.status}`;
-    throw new Error(message);
-  }
-  return data;
+    const res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || `Error HTTP ${res.status}`);
+    return data;
 }
 
-async function loadTasks() {
-  setMsg("");
-  tbody.innerHTML = `<tr><td colspan="4" class="muted">Cargando...</td></tr>`;
+async function loadProducts() {
+    setMsg("");
+    tbody.innerHTML = `<tr><td colspan="5" class="muted">Cargando inventario...</td></tr>`;
 
-  try {
-    const items = await http(API);
-    if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="4" class="muted">Sin registros</td></tr>`;
-      return;
+    try {
+        const items = await http(API);
+        if (!items || !items.length) {
+            tbody.innerHTML = `<tr><td colspan="5" class="muted">No hay productos en bodega</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = items.map(row => `
+            <tr>
+                <td>${row.id}</td>
+                <td>${escapeHtml(row.nombre)}</td>
+                <td>$${row.precio}</td>
+                <td>${row.cantidad} unidades</td>
+                <td>
+                    <button class="btn secondary" onclick="editProduct(${row.id})">Editar</button>
+                    <button class="btn danger" onclick="deleteProduct(${row.id})">Eliminar</button>
+                </td>
+            </tr>
+        `).join("");
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" class="muted">Error al conectar con el servidor</td></tr>`;
+        setMsg(e.message, true);
     }
-    tbody.innerHTML = items.map(row => `
-      <tr>
-        <td>${row.id}</td>
-        <td>${escapeHtml(row.title)}</td>
-        <td><span class="muted">${row.status}</span></td>
-        <td>
-          <button class="btn secondary" onclick="editTask(${row.id})">Editar</button>
-          <button class="btn danger" onclick="deleteTask(${row.id})">Eliminar</button>
-        </td>
-      </tr>
-    `).join("");
-  } catch (e) {
-    tbody.innerHTML = `<tr><td colspan="4" class="muted">Error al cargar</td></tr>`;
-    setMsg(e.message, true);
-  }
 }
 
-window.editTask = async function (id) {
-  setMsg("");
-  try {
-    const item = await http(`${API}/${id}`);
-    taskId.value = item.id;
-    title.value = item.title;
-    description.value = item.description || "";
-    statusEl.value = item.status;
-    formTitle.textContent = `Editar tarea #${item.id}`;
-  } catch (e) {
-    setMsg(e.message, true);
-  }
+window.editProduct = async function (id) {
+    setMsg("");
+    try {
+        const item = await http(`${API}/${id}`);
+        productId.value = item.id;
+        nombre.value = item.nombre;
+        precio.value = item.precio;
+        cantidad.value = item.cantidad;
+        formTitle.textContent = `Editar Producto #${item.id}`;
+    } catch (e) {
+        setMsg(e.message, true);
+    }
 };
 
-window.deleteTask = async function (id) {
-  if (!confirm(`¿Eliminar tarea #${id}?`)) return;
-  setMsg("");
-  try {
-    await http(`${API}/${id}`, { method: "DELETE" });
-    setMsg("Eliminado correctamente");
-    await loadTasks();
-    resetForm();
-  } catch (e) {
-    setMsg(e.message, true);
-  }
+window.deleteProduct = async function (id) {
+    if (!confirm(`¿Eliminar producto #${id} del inventario?`)) return;
+    try {
+        await http(`${API}/${id}`, { method: "DELETE" });
+        setMsg("Producto eliminado");
+        await loadProducts();
+        resetForm();
+    } catch (e) {
+        setMsg(e.message, true);
+    }
 };
 
 form.addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  setMsg("");
+    ev.preventDefault();
+    const payload = {
+        nombre: nombre.value.trim(),
+        precio: parseFloat(precio.value),
+        cantidad: parseInt(cantidad.value)
+    };
 
-  const payload = {
-    title: title.value.trim(),
-    description: description.value.trim() || null,
-    status: statusEl.value
-  };
-
-  try {
-    if (!payload.title || payload.title.length < 3) {
-      setMsg("Título mínimo 3 caracteres", true);
-      return;
+    try {
+        if (productId.value) {
+            await http(`${API}/${productId.value}`, {
+                method: "PUT",
+                body: JSON.stringify(payload)
+            });
+            setMsg("Producto actualizado");
+        } else {
+            await http(API, { method: "POST", body: JSON.stringify(payload) });
+            setMsg("Producto agregado a bodega");
+        }
+        resetForm();
+        await loadProducts();
+    } catch (e) {
+        setMsg(e.message, true);
     }
-
-    if (taskId.value) {
-      await http(`${API}/${taskId.value}`, {
-        method: "PUT",
-        body: JSON.stringify(payload)
-      });
-      setMsg("Actualizado correctamente");
-    } else {
-      await http(API, { method: "POST", body: JSON.stringify(payload) });
-      setMsg("Creado correctamente");
-    }
-
-    resetForm();
-    await loadTasks();
-  } catch (e) {
-    setMsg(e.message, true);
-  }
 });
 
 function resetForm() {
-  taskId.value = "";
-  title.value = "";
-  description.value = "";
-  statusEl.value = "PENDIENTE";
-  formTitle.textContent = "Nueva tarea";
+    productId.value = "";
+    nombre.value = "";
+    precio.value = "";
+    cantidad.value = "0";
+    formTitle.textContent = "Nuevo Producto";
 }
 
 function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-// init
-loadTasks();
+loadProducts();

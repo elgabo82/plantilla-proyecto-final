@@ -4,48 +4,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self' data: gap: https://pweb.grupofmo.com:5556 https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline';
-               connect-src 'self' https://pweb.grupofmo.com:5556;
+      content="default-src 'self' data: gap: http://localhost:8080 https://pweb.grupofmo.com:5556 https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline';
+               connect-src 'self' http://localhost:8080 https://pweb.grupofmo.com:5556;
                img-src 'self' data:;
                style-src 'self' 'unsafe-inline';
                script-src 'self' 'unsafe-inline' 'unsafe-eval';">
-  <title>Gestor de Tareas - Proyecto Final</title>
+  <title>Inventario de Bodega - Proyecto Final</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="container">
-    <h1>Gestor de Tareas</h1>
-    <p class="muted">Frontend (HTML/CSS/JS) consumiendo <code>/api/v1</code></p>
+    <h1>Gestión de Inventario</h1>
+    <p class="muted">Control de existencias de bodega consumiendo <code>/api/v1/productos</code></p>
   </header>
 
   <main class="container grid">
     <section class="card">
-      <h2 id="formTitle">Nueva tarea</h2>
+      <h2 id="formTitle">Nuevo Producto</h2>
 
       <form id="taskForm">
         <input type="hidden" id="taskId" />
 
         <label>
-          Título
-          <input id="title" type="text" minlength="3" required placeholder="Ej: Investigar Sequelize" />
+          Nombre del Producto
+          <input id="title" type="text" minlength="3" required placeholder="Ej: Aceite de Motor" />
         </label>
 
         <label>
-          Descripción
-          <textarea id="description" rows="3" placeholder="Detalles..."></textarea>
+          Precio ($)
+          <input id="description" type="number" step="0.01" required placeholder="0.00" />
         </label>
 
         <label>
-          Estado
-          <select id="status">
-            <option value="PENDIENTE">PENDIENTE</option>
-            <option value="EN_PROGRESO">EN_PROGRESO</option>
-            <option value="HECHA">HECHA</option>
-          </select>
+          Cantidad en Stock
+          <input id="status" type="number" required placeholder="Cantidad disponible" />
         </label>
 
         <div class="actions">
-          <button type="submit" class="btn">Guardar</button>
+          <button type="submit" class="btn">Guardar en Bodega</button>
           <button type="button" id="cancelBtn" class="btn secondary">Cancelar</button>
         </div>
 
@@ -55,7 +51,7 @@
 
     <section class="card">
       <div class="row">
-        <h2>Listado</h2>
+        <h2>Stock Actual</h2>
         <button id="reloadBtn" class="btn secondary">Recargar</button>
       </div>
 
@@ -63,8 +59,8 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Título</th>
-            <th>Estado</th>
+            <th>Producto</th>
+            <th>Stock</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -74,7 +70,7 @@
   </main>
 
   <footer class="container muted">
-    <small>API: <code>/api/v1/tasks</code></small>
+    <small>API Endpoint: <code>/api/v1/productos</code></small>
   </footer>
 
   <script src="app.js"></script>
