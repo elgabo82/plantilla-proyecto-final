@@ -1,47 +1,79 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Grupo 1 - Tareas</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta y Resultados - Grupo 5</title>
+    <link rel="stylesheet" href="Style.css">
 </head>
 <body>
-  <main class="container">
-    <h1>Gestor de Tareas (Grupo 1)</h1>
 
-    <section class="card">
-      <h2>Nueva tarea</h2>
-      <form id="frm">
-        <input id="materia" placeholder="Materia (ej. Programación Web)" required />
-        <input id="titulo" placeholder="Título" required />
-        <input id="descripcion" placeholder="Descripción (opcional)" />
-        <button>Guardar</button>
-      </form>
-    </section>
+<div class="encuesta">
+    <h1>Encuesta y Resultados - Grupo 5</h1>
 
-    <section class="card">
-      <h2>Listado</h2>
-      <div class="filters">
-        <input id="fMateria" placeholder="Filtrar por materia" />
-        <select id="fEstado">
-          <option value="">(Todos)</option>
-          <option value="PENDIENTE">PENDIENTE</option>
-          <option value="HECHA">HECHA</option>
-        </select>
-        <button id="btnFiltrar" type="button">Aplicar</button>
-        <button id="btnReset" type="button">Reset</button>
-      </div>
+    <form id="formEncuesta">
 
-      <table>
-        <thead>
-          <tr><th>ID</th><th>Materia</th><th>Título</th><th>Estado</th><th>Acciones</th></tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </section>
-  </main>
+        <h4>¿Cómo calificarías nuestra encuesta?</h4>
+        <label><input type="radio" name="opinion1" value="excelente"> Excelente</label>
+        <label><input type="radio" name="opinion1" value="bueno"> Bueno</label>
+        <label><input type="radio" name="opinion1" value="regular"> Regular</label>
+        <label><input type="radio" name="opinion1" value="malo"> Malo</label>
 
-  <script src="app.js"></script>
+        <h4>¿Qué le pareció nuestra encuesta sencilla?</h4>
+        <label><input type="radio" name="opinion2" value="excelente"> Excelente</label>
+        <label><input type="radio" name="opinion2" value="bueno"> Bueno</label>
+        <label><input type="radio" name="opinion2" value="regular"> Regular</label>
+        <label><input type="radio" name="opinion2" value="malo"> Malo</label>
+
+        <h4>¿Qué calificación nos darían por esta encuesta?</h4>
+        <label><input type="radio" name="opinion3" value="excelente"> Excelente</label>
+        <label><input type="radio" name="opinion3" value="bueno"> Bueno</label>
+        <label><input type="radio" name="opinion3" value="regular"> Regular</label>
+        <label><input type="radio" name="opinion3" value="malo"> Malo</label>
+        
+        <button type="button" id="btnVotar">Votar</button>
+    </form>
+
+    <h3>Resultados de la Encuesta</h3>
+
+    <div class="Resultados">
+        <span>Excelente</span>
+        <div class="barra"><div class="progreso excelente">60%</div></div>
+    </div>
+
+    <div class="Resultados">
+        <span>Bueno</span>
+        <div class="barra"><div class="progreso bueno">25%</div></div>
+    </div>
+
+    <div class="Resultados">
+        <span>Regular</span>
+        <div class="barra"><div class="progreso regular">10%</div></div>
+    </div>
+
+    <div class="Resultados">
+        <span>Malo</span>
+        <div class="barra"><div class="progreso malo">5%</div></div>
+    </div>
+    <button type="button" id="btnReiniciarVotos">Reiniciar Votos</button>
+
+
+    <!-- Crear nueva encuesta -->
+    <div class="nueva-encuesta">
+    <h3>Nueva encuesta</h3>
+
+    <input type="text" id="preg1" placeholder="Pregunta 1">
+    <input type="text" id="preg2" placeholder="Pregunta 2">
+    <input type="text" id="preg3" placeholder="Pregunta 3">
+
+    <button type="button" id="btnNuevaEncuesta">
+        Crear nueva encuesta
+    </button>
+</div>
+
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
